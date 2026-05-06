@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 interface HeaderProps {
   cartCount: number
   onCartClick: () => void

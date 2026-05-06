@@ -4,8 +4,6 @@ import { ProductList } from './components/ProductList'
 import { OrderForm } from './components/OrderForm'
 import { NotificationToast } from './components/NotificationToast'
 import { products } from './data/products'
-import { storage } from './utils/storage'
-import { exportOrdersToExcel } from './utils/excel'
 import { useCart } from './context'
 import './App.css'
 
