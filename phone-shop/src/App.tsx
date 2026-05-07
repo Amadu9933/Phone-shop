@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Header } from './components/Header'
+import { HeroSection } from './components/HeroSection'
 import { ProductList } from './components/ProductList'
 import { OrderForm } from './components/OrderForm'
 import { NotificationToast } from './components/NotificationToast'
@@ -377,12 +378,24 @@ function App() {
           /* ══ PRODUCTS VIEW ══════════════════════════════════════════════ */
           <div style={{ paddingBottom: cartCount > 0 ? 120 : 40 }}>
 
+            {!searchQuery && (
+              <HeroSection
+                onShopNow={() => {
+                  document.getElementById('products-anchor')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                onRepairs={() => {
+                  setFilter('repair')
+                  document.getElementById('products-anchor')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+              />
+            )}
+
             {/*
               ┌─────────────────────────────────────────────────┐
               │  THE ONE FILTER BAR — only rendered here, once  │
               └─────────────────────────────────────────────────┘
             */}
-            <div className="filter-bar">
+            <div id="products-anchor" className="filter-bar">
               {FILTERS.map(({ key, label }) => {
                 const count = countVisible(key, '')
                 return (
