@@ -1,8 +1,8 @@
 [build]
   base    = "phone-shop"
-  command = "npm run build"
+  command = "npm install --include=optional && npm run build"
   publish = "dist"
 
 [build.environment]
-  NPM_FLAGS = "--include=optional"
   NODE_VERSION = "20"
+
