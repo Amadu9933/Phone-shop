@@ -18,7 +18,7 @@ export function Footer() {
             }}>
                 <div>
                     <h3 style={{ color: '#E8B84B', marginBottom: '16px' }}>HamraazDeals</h3>
-                    <p>Your trusted source for the latest mobile phones and accessories.</p>
+                    <p>Your trusted source for the latest  mobile phones and accessories</p>
                 </div>
                 <div>
                     <h4 style={{ color: 'white', marginBottom: '12px' }}>Quick Links</h4>
