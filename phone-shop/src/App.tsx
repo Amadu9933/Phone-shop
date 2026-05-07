@@ -239,29 +239,26 @@ function injectGlobal() {
 }
 
 // ─── Filter config — single source of truth ───────────────────────────────────
-const FILTERS: { key: 'all' | 'phone' | 'accessory'; label: string }[] = [
+type FilterKey = 'all' | 'iphone' | 'samsung' | 'pixel' | 'repair' | 'accessory'
+
+const FILTERS: { key: FilterKey; label: string }[] = [
   { key: 'all', label: 'All Products' },
-  { key: 'phone', label: 'Phones' },
+  { key: 'iphone', label: 'iPhones' },
+  { key: 'samsung', label: 'Samsung' },
+  { key: 'pixel', label: 'Google Pixel' },
+  { key: 'repair', label: 'Repair & Parts' },
   { key: 'accessory', label: 'Accessories' },
 ]
 
 function countVisible(filterKey: string, searchQuery: string) {
   return products.filter(p => {
-    // filter match
-    const cat = (p.category ?? '').toLowerCase()
-    const type = (p.type ?? '').toLowerCase()
-    const filterMatch = filterKey === 'all'
-      ? true
-      : filterKey === 'phone'
-        ? type === 'phone' || cat.includes('phone') || cat.includes('smart') || cat.includes('tablet')
-        : type === 'accessory' || cat.includes('access')
+    const filterMatch = filterKey === 'all' ? true : p.category === filterKey
 
-    // search match
     const q = searchQuery.toLowerCase().trim()
     const searchMatch = !q
       || p.name.toLowerCase().includes(q)
       || (p.description ?? '').toLowerCase().includes(q)
-      || cat.includes(q)
+      || p.category.includes(q)
 
     return filterMatch && searchMatch
   }).length
@@ -273,7 +270,7 @@ function App() {
 
   const { cart, cartTotal, cartCount, removeFromCart, clearCart } = useCart()
   const [showCart, setShowCart] = useState(false)
-  const [filter, setFilter] = useState<'all' | 'phone' | 'accessory'>('all')
+  const [filter, setFilter] = useState<FilterKey>('all')
   const [searchQuery, setSearch] = useState('')
 
   const handleRemove = (id: string) => removeFromCart(id)
@@ -386,15 +383,28 @@ function App() {
               └─────────────────────────────────────────────────┘
             */}
             <div className="filter-bar">
-              {FILTERS.map(({ key, label }) => (
-                <button
-                  key={key}
-                  className={`filter-btn${filter === key ? ' filter-btn--active' : ''}`}
-                  onClick={() => setFilter(key)}
-                >
-                  {label}
-                </button>
-              ))}
+              {FILTERS.map(({ key, label }) => {
+                const count = countVisible(key, '')
+                return (
+                  <button
+                    key={key}
+                    className={`filter-btn${filter === key ? ' filter-btn--active' : ''}`}
+                    onClick={() => setFilter(key)}
+                  >
+                    {label}
+                    {key !== 'all' && (
+                      <span style={{
+                        marginLeft: 5,
+                        fontSize: 10,
+                        opacity: 0.6,
+                        fontWeight: 400,
+                      }}>
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
               <span className="filter-count">
                 {countVisible(filter, searchQuery)} product{countVisible(filter, searchQuery) !== 1 ? 's' : ''}
               </span>

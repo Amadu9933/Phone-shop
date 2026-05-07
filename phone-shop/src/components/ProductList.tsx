@@ -3,9 +3,11 @@ import type { Product } from '../data/types'
 import { ProductCard } from './ProductCard'
 import { useCart } from '../context'
 
+type FilterKey = 'all' | 'iphone' | 'samsung' | 'pixel' | 'repair' | 'accessory' | 'phone'
+
 interface ProductListProps {
     products: Product[]
-    filter?: 'all' | 'phone' | 'accessory'
+    filter?: FilterKey
     searchQuery?: string
 }
 
@@ -75,10 +77,7 @@ function Pagination({ page, total, onChange }: { page: number; total: number; on
 // ─── Filter helper ────────────────────────────────────────────────────────────
 function matchesFilter(p: Product, filter: string): boolean {
     if (filter === 'all') return true
-    const cat = (p.category ?? '').toLowerCase()
-    return filter === 'phone'
-        ? cat.includes('phone') || cat.includes('smart') || cat.includes('tablet')
-        : cat.includes('access')
+    return p.category === filter
 }
 
 function matchesSearch(p: Product, q: string): boolean {

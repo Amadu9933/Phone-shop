@@ -8,12 +8,29 @@ interface ProductCardProps {
     featured?: boolean
 }
 
+// ─── Category display labels ──────────────────────────────────────────────────
+const CATEGORY_LABELS: Record<string, string> = {
+    iphone:    'iPhone',
+    samsung:   'Samsung',
+    pixel:     'Google Pixel',
+    repair:    'Repair & Parts',
+    phone:     'Smartphone',
+    accessory: 'Accessory',
+}
+
 // ─── Inline SVGs ──────────────────────────────────────────────────────────────
 const CartSVG = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+)
+
+const WASvg = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.528 5.855L.057 23.985l6.305-1.654A11.954 11.954 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.817 9.817 0 0 1-5.002-1.37l-.359-.213-3.721.976.993-3.624-.234-.373A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z" />
     </svg>
 )
 
@@ -28,6 +45,13 @@ const PhoneSVG = ({ gold }: { gold?: boolean }) => (
         <rect x="2" y="2" width="48" height="82" rx="8" fill={gold ? '#E8B84B' : '#9990B8'} />
         <rect x="8" y="12" width="36" height="52" rx="3" fill="#0D0C14" opacity="0.6" />
         <rect x="18" y="74" width="16" height="4" rx="2" fill="#0D0C14" opacity="0.5" />
+    </svg>
+)
+
+const RepairSVG = () => (
+    <svg width="62" height="62" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.28 }}
+        stroke="#9990B8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
     </svg>
 )
 
@@ -125,7 +149,8 @@ const CSS = `
 @media (min-width: 640px) { .phc-btn { height: 38px; font-size: 13px; } }
 .phc-btn-gold  { background: #E8B84B; color: #0D0C14; }
 .phc-btn-gold:hover { opacity: 0.86; transform: scale(0.985); }
-.phc-btn-out   { background: #1E1C2A; color: #4a4560; border: 1px solid rgba(255,255,255,0.06); cursor: not-allowed; }
+.phc-btn-wa    { background: rgba(37,211,102,0.14); border: 1px solid rgba(37,211,102,0.35); color: #25d366; }
+.phc-btn-wa:hover { background: rgba(37,211,102,0.22); opacity: 0.9; transform: scale(0.985); }
 
 /* Success toast overlay */
 .phc-toast     { position: absolute; inset: 0; background: rgba(13,12,20,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 16px; opacity: 0; transition: opacity 0.18s; pointer-events: none; z-index: 20; }
@@ -153,6 +178,7 @@ export function ProductCard({ product, onAddToCart, featured = false }: ProductC
 
     const avail = AVAIL[product.availability] ?? AVAIL['in-stock']
     const isOut = product.availability === 'out-of-stock'
+    const isRepair = product.category === 'repair'
     const useImg = !imgErr && !!product.image
 
     const handleAdd = () => {
@@ -163,6 +189,13 @@ export function ProductCard({ product, onAddToCart, featured = false }: ProductC
         setTimeout(() => setToast(false), 1700)
     }
 
+    const handleWaEnquiry = () => {
+        const msg = encodeURIComponent(
+            `Hi HamraazDeal! I'm interested in *${product.name}* (GH₵${product.price.toLocaleString('en-GH', { minimumFractionDigits: 2 })}). Is it available?`
+        )
+        window.open(`https://wa.me/233540985004?text=${msg}`, '_blank')
+    }
+
     return (
         <div className={`phc${featured ? ' phc-featured' : ''}`}>
 
@@ -170,7 +203,7 @@ export function ProductCard({ product, onAddToCart, featured = false }: ProductC
             <div className="phc-img">
                 {useImg
                     ? <img src={product.image} alt={product.name} onError={() => setImgErr(true)} />
-                    : <PhoneSVG gold={featured} />
+                    : isRepair ? <RepairSVG /> : <PhoneSVG gold={featured} />
                 }
                 <span className="phc-pill" style={{ top: 10, right: 10, background: avail.bg, borderColor: avail.border, color: avail.color }}>
                     {avail.label}
@@ -184,7 +217,7 @@ export function ProductCard({ product, onAddToCart, featured = false }: ProductC
 
             {/* Body */}
             <div className="phc-body">
-                <div className="phc-cat">{product.category}</div>
+                <div className="phc-cat">{CATEGORY_LABELS[product.category] ?? product.category}</div>
                 <div className="phc-name">{product.name}</div>
                 <div className="phc-desc">{product.description}</div>
                 {product.specs && product.specs.length > 0 && (
@@ -209,7 +242,9 @@ export function ProductCard({ product, onAddToCart, featured = false }: ProductC
                 </div>
 
                 {isOut ? (
-                    <button className="phc-btn phc-btn-out" disabled>Out of stock</button>
+                    <button className="phc-btn phc-btn-wa" onClick={handleWaEnquiry}>
+                        <WASvg /> WhatsApp Enquiry
+                    </button>
                 ) : (
                     <>
                         <div className="phc-qty-row">

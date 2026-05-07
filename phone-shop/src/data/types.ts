@@ -1,7 +1,7 @@
 export interface Product {
   id: string;
   name: string;
-  category: "phone" | "accessory";
+  category: "iphone" | "samsung" | "pixel" | "repair" | "phone" | "accessory";
   price: number;
   image: string;
   availability: "in-stock" | "low-stock" | "out-of-stock";
